@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN"><head>    
+	<meta charset="UTF-8" />    
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0">
+	<meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+	<title>测试的页面</title>
+	<style type="text/css">
+		html, body {
+			margin: 0;
+			padding: 0;
+			font-size: 12px;
+		}
+		.overlay-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			z-index: 10000;
+		}
+		.overlay-container > .mask {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: #000;
+			opacity: 0.5;
+		}
+		.main-container {
+		    position: absolute;
+		    top: 0;
+		    left: 0;
+		    right: 0;
+		    bottom: 0;
+		    display:flex;
+		    display: -webkit-flex;
+		    flex-direction: column;
+		    width: 60%;
+		    height: 25%;
+		    margin: auto;
+		    background-color: #fff;
+		    border-radius: .4rem;
+		}
+		.title {
+			height: 40px;
+			line-height: 40px;
+			border-bottom: 1px solid #efefef;
+			padding-left: 20px;
+			font-weight: bold;
+			font-size: 18px;
+			cursor: pointer;
+		}
+		.content {
+			flex: 1;
+			border-bottom: 1px solid #efefef;
+			overflow-y: auto; 
+			padding: 20px;
+		}
+		.footer {
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+		}
+		.footer > button {
+			margin-right: 10px;
+			margin-left: 10px;
+		}
+	</style>
+</head>
+<body>
+	爱是来得及看撒娇大声道
+	<button onclick="openDialog()">打开一个弹窗</button>
+	<button onclick="openDialog1()">打开一个其他内容的弹窗</button>
+</body>
+<script type="text/javascript">
+	/**
+	 * [Overlay 弹窗的实体类]
+	 * @Author   Alex.Wang
+	 * @Datetime 2019-05-07T13:14:06+0800
+	 * @param    {[object]}                 options [是个配置对象] {title: ' 标题', icon: 'icon 图示', content: '弹窗内容', btns: ['按钮数组'] }
+	 */
+	function Overlay(options) {
+		this.options = options || {};
+		var overlay = document.createElement('div');
+		overlay.className = 'overlay-container';
+		overlay.style.height = window.screen.availHeight + 'px';
+		var overlayHTML = ['<div class="mask"></div>'];
+		overlayHTML.push('<div class="main-container">');
+		overlayHTML.push(`  <div class="title">${this.options.title || '这是一个默认标题'}</div>`);
+		overlayHTML.push(`	<div class="content">${this.options.content || '这是一些默认的内容默认的内容默认的内容默认的内容默认的内容'}</div>`);
+		overlayHTML.push('	<div class="footer">');
+		overlayHTML.push('		<button data-type="sure">确定</button>');
+		overlayHTML.push('		<button data-type="cancel">取消</button>');
+		overlayHTML.push('	</div>');
+		overlayHTML.push('</div>');
+		overlay.innerHTML = overlayHTML.join('');
+		this.ele = overlay;
+	}
+
+	/**
+	 * [open 弹窗打开的办法]
+	 * @Author   Alex.Wang
+	 * @Datetime 2019-05-07T13:12:41+0800
+	 * @return   {[type]}                 [description]
+	 */
+	Overlay.prototype.open = function () {
+		document.body.appendChild(this.ele);
+		var firstBtn = this.ele.lastElementChild.lastElementChild.firstElementChild;
+		var secondBtn = this.ele.lastElementChild.lastElementChild.lastElementChild;
+		firstBtn.onclick = null; // 先解除事件绑定
+		secondBtn.onclick = null; // 先解除事件绑定
+		var self = this;
+		firstBtn.onclick = function () {
+			self.close('sure');
+		}
+		secondBtn.onclick = function () {
+			self.close('cancel');
+		}
+	}
+
+	/**
+	 * [close 弹窗关闭的方法]
+	 * @Author   Alex.Wang
+	 * @Datetime 2019-05-07T13:13:45+0800
+	 * @param    {[string]}                 type  cancel 取消， sure 确定
+	 * @return   {[type]}                 [description]
+	 */
+	Overlay.prototype.close = function (type) {
+		this.ele.parentNode.removeChild(this.ele);
+		console.log(type);
+	}
+	
+	function openDialog () {
+		var testOverlay = new Overlay();
+		testOverlay.open();
+	}
+	function openDialog1 () {
+		var testOverlay = new Overlay({title: '测试标题', content: '其他内容'});
+		testOverlay.open();
+	}
+</script>
+</html>
